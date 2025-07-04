@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Alphabet & Number Learning App</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f0f8ff;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+    }
+    h1 {
+      padding: 20px;
+      background-color: #007bff;
+      color: white;
+      margin: 0;
+    }
+    .grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+      padding: 20px;
+    }
+    .btn {
+      background: #ffffff;
+      color: #333;
+      font-size: 16px;
+      padding: 10px;
+      width: 120px;
+      height: 150px;
+      border: 2px solid #4caf50;
+      border-radius: 12px;
+      position: relative;
+      transition: transform 0.2s;
+      cursor: pointer;
+      box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    .btn:hover {
+      transform: scale(1.05);
+    }
+    .btn img {
+      width: 70px;
+      height: 70px;
+      object-fit: contain;
+      margin-bottom: 8px;
+    }
+    .popup {
+      position: absolute;
+      bottom: 5px;
+      left: 5px;
+      right: 5px;
+      background: rgba(255,255,255,0.95);
+      color: #000;
+      font-weight: bold;
+      font-size: 14px;
+      padding: 4px;
+      border-radius: 6px;
+      animation: fadeOut 1.5s ease-in-out forwards;
+      box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.2);
+    }
+    @keyframes fadeOut {
+      0% {opacity: 1;}
+      100% {opacity: 0; transform: translateY(-10px);}
+    }
+  </style>
+</head>
+<body>
+  <h1>Learn Alphabets & Numbers</h1>
+  <div class="grid" id="buttonGrid"></div>
+
+  <script>
+    const buttonGrid = document.getElementById('buttonGrid');
+    const clickSound = new Audio('sounds/click.mp3');
+
+    const items = [
+      { label: 'A', word: 'Apple' },
+      { label: 'B', word: 'Ball' },
+      { label: 'C', word: 'Cat' },
+      { label: 'D', word: 'Dog' },
+      { label: 'E', word: 'Elephant' },
+      { label: 'F', word: 'Fish' },
+      { label: 'G', word: 'Goat' },
+      { label: 'H', word: 'Hat' },
+      { label: 'I', word: 'Ice' },
+      { label: 'J', word: 'Jug' },
+      { label: 'K', word: 'Kite' },
+      { label: 'L', word: 'Lion' },
+      { label: 'M', word: 'Monkey' },
+      { label: 'N', word: 'Nest' },
+      { label: 'O', word: 'Orange' },
+      { label: 'P', word: 'Pen' },
+      { label: 'Q', word: 'Queen' },
+      { label: 'R', word: 'Rabbit' },
+      { label: 'S', word: 'Sun' },
+      { label: 'T', word: 'Tiger' },
+      { label: 'U', word: 'Umbrella' },
+      { label: 'V', word: 'Van' },
+      { label: 'W', word: 'Watch' },
+      { label: 'X', word: 'X-ray' },
+      { label: 'Y', word: 'Yoyo' },
+      { label: 'Z', word: 'Zoo' },
+      { label: '1', word: 'One' },
+      { label: '2', word: 'Two' },
+      { label: '3', word: 'Three' },
+      { label: '4', word: 'Four' },
+      { label: '5', word: 'Five' },
+      { label: '6', word: 'Six' },
+      { label: '7', word: 'Seven' },
+      { label: '8', word: 'Eight' },
+      { label: '9', word: 'Nine' },
+      { label: '10', word: 'Ten' },
+    ];
+
+    items.forEach(item => {
+      const btn = document.createElement('button');
+      btn.classList.add('btn');
+
+      const img = document.createElement('img');
+      img.src = `images/${item.label.toLowerCase()}.png`;
+      img.alt = item.word;
+
+      const text = document.createElement('div');
+      text.textContent = item.label;
+
+      btn.appendChild(img);
+      btn.appendChild(text);
+
+      btn.addEventListener('click', () => {
+        const wordSoundPath = `sounds/${item.label.toLowerCase()}-${item.word.toLowerCase()}.mp3`;
+        const wordAudio = new Audio(wordSoundPath);
+
+        wordAudio.onerror = () => clickSound.play();
+        wordAudio.play().catch(() => clickSound.play());
+
+        const popup = document.createElement('div');
+        popup.className = 'popup';
+        popup.textContent = `${item.label} for ${item.word}`;
+        btn.appendChild(popup);
+        setTimeout(() => popup.remove(), 1500);
+      });
+
+      buttonGrid.appendChild(btn);
+    });
+  </script>
+</body>
+</html>
