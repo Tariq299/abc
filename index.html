@@ -1,150 +1,160 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Alphabet & Number Learning App</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Learn with Fun</title>
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #f0f8ff;
       margin: 0;
-      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: #fffaf0;
       text-align: center;
     }
-    h1 {
-      padding: 20px;
-      background-color: #007bff;
+    header {
+      background: #ff6f61;
       color: white;
-      margin: 0;
+      padding: 20px 0;
+      font-size: 28px;
+      font-weight: bold;
     }
-    .grid {
-      display: flex;
-      flex-wrap: wrap;
+    .main-menu, .category-menu, .items-grid {
+      display: none;
+      flex-direction: column;
+      align-items: center;
       justify-content: center;
-      gap: 12px;
-      padding: 20px;
+      margin-top: 40px;
+    }
+    .visible {
+      display: flex;
     }
     .btn {
-      background: #ffffff;
-      color: #333;
-      font-size: 16px;
-      padding: 10px;
-      width: 120px;
-      height: 150px;
-      border: 2px solid #4caf50;
-      border-radius: 12px;
-      position: relative;
-      transition: transform 0.2s;
+      background: #00bcd4;
+      color: white;
+      font-size: 20px;
+      padding: 15px 30px;
+      margin: 15px;
+      border: none;
+      border-radius: 8px;
       cursor: pointer;
-      box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+      transition: 0.3s;
     }
     .btn:hover {
-      transform: scale(1.05);
+      background: #008c9e;
     }
-    .btn img {
-      width: 70px;
-      height: 70px;
-      object-fit: contain;
-      margin-bottom: 8px;
+    .items-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      gap: 15px;
+      padding: 20px;
+      max-width: 600px;
     }
-    .popup {
-      position: absolute;
-      bottom: 5px;
-      left: 5px;
-      right: 5px;
-      background: rgba(255,255,255,0.95);
-      color: #000;
-      font-weight: bold;
-      font-size: 14px;
-      padding: 4px;
-      border-radius: 6px;
-      animation: fadeOut 1.5s ease-in-out forwards;
-      box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.2);
+    .item-btn {
+      background: #fff;
+      border: 2px solid #00bcd4;
+      color: #333;
+      font-size: 24px;
+      padding: 20px;
+      border-radius: 12px;
+      cursor: pointer;
     }
-    @keyframes fadeOut {
-      0% {opacity: 1;}
-      100% {opacity: 0; transform: translateY(-10px);}
+    #imagePreview {
+      margin-top: 20px;
+      max-width: 150px;
+      height: auto;
+      display: none;
     }
   </style>
 </head>
 <body>
-  <h1>Learn Alphabets & Numbers</h1>
-  <div class="grid" id="buttonGrid"></div>
+  <header>Learn With Fun</header>
+
+  <div class="main-menu visible" id="mainMenu">
+    <button class="btn" onclick="showCategory('abc')">ABC</button>
+    <button class="btn" onclick="showCategory('123')">123</button>
+    <button class="btn" onclick="playMusic()">Music</button>
+  </div>
+
+  <div class="category-menu" id="abcMenu">
+    <button class="btn" onclick="backToMain()">Back</button>
+    <div class="items-grid" id="abcGrid"></div>
+  </div>
+
+  <div class="category-menu" id="numberMenu">
+    <button class="btn" onclick="backToMain()">Back</button>
+    <div class="items-grid" id="numGrid"></div>
+  </div>
+
+  <img id="imagePreview" />
 
   <script>
-    const buttonGrid = document.getElementById('buttonGrid');
-    const clickSound = new Audio('sounds/click.mp3');
-
-    const items = [
-      { label: 'A', word: 'Apple' },
-      { label: 'B', word: 'Ball' },
-      { label: 'C', word: 'Cat' },
-      { label: 'D', word: 'Dog' },
-      { label: 'E', word: 'Elephant' },
-      { label: 'F', word: 'Fish' },
-      { label: 'G', word: 'Goat' },
-      { label: 'H', word: 'Hat' },
-      { label: 'I', word: 'Ice' },
-      { label: 'J', word: 'Jug' },
-      { label: 'K', word: 'Kite' },
-      { label: 'L', word: 'Lion' },
-      { label: 'M', word: 'Monkey' },
-      { label: 'N', word: 'Nest' },
-      { label: 'O', word: 'Orange' },
-      { label: 'P', word: 'Pen' },
-      { label: 'Q', word: 'Queen' },
-      { label: 'R', word: 'Rabbit' },
-      { label: 'S', word: 'Sun' },
-      { label: 'T', word: 'Tiger' },
-      { label: 'U', word: 'Umbrella' },
-      { label: 'V', word: 'Van' },
-      { label: 'W', word: 'Watch' },
-      { label: 'X', word: 'X-ray' },
-      { label: 'Y', word: 'Yoyo' },
-      { label: 'Z', word: 'Zoo' },
-      { label: '1', word: 'One' },
-      { label: '2', word: 'Two' },
-      { label: '3', word: 'Three' },
-      { label: '4', word: 'Four' },
-      { label: '5', word: 'Five' },
-      { label: '6', word: 'Six' },
-      { label: '7', word: 'Seven' },
-      { label: '8', word: 'Eight' },
-      { label: '9', word: 'Nine' },
-      { label: '10', word: 'Ten' },
+    const abc = [
+      { label: 'A', word: 'Apple' }, { label: 'B', word: 'Ball' }, { label: 'C', word: 'Cat' },
+      { label: 'D', word: 'Dog' }, { label: 'E', word: 'Elephant' }, { label: 'F', word: 'Fish' },
+      { label: 'G', word: 'Goat' }, { label: 'H', word: 'Hat' }, { label: 'I', word: 'Ice' },
+      { label: 'J', word: 'Jug' }, { label: 'K', word: 'Kite' }, { label: 'L', word: 'Lion' },
+      { label: 'M', word: 'Monkey' }, { label: 'N', word: 'Nest' }, { label: 'O', word: 'Orange' },
+      { label: 'P', word: 'Pen' }, { label: 'Q', word: 'Queen' }, { label: 'R', word: 'Rabbit' },
+      { label: 'S', word: 'Sun' }, { label: 'T', word: 'Tiger' }, { label: 'U', word: 'Umbrella' },
+      { label: 'V', word: 'Van' }, { label: 'W', word: 'Watch' }, { label: 'X', word: 'X-ray' },
+      { label: 'Y', word: 'Yoyo' }, { label: 'Z', word: 'Zoo' }
     ];
 
-    items.forEach(item => {
-      const btn = document.createElement('button');
-      btn.classList.add('btn');
+    const digits = [
+      { label: '1', word: 'One' }, { label: '2', word: 'Two' }, { label: '3', word: 'Three' },
+      { label: '4', word: 'Four' }, { label: '5', word: 'Five' }, { label: '6', word: 'Six' },
+      { label: '7', word: 'Seven' }, { label: '8', word: 'Eight' }, { label: '9', word: 'Nine' },
+      { label: '10', word: 'Ten' }
+    ];
 
-      const img = document.createElement('img');
-      img.src = `images/${item.label.toLowerCase()}.png`;
-      img.alt = item.word;
+    const abcGrid = document.getElementById('abcGrid');
+    const numGrid = document.getElementById('numGrid');
 
-      const text = document.createElement('div');
-      text.textContent = item.label;
-
-      btn.appendChild(img);
-      btn.appendChild(text);
-
-      btn.addEventListener('click', () => {
-        const wordSoundPath = `sounds/${item.label.toLowerCase()}-${item.word.toLowerCase()}.mp3`;
-        const wordAudio = new Audio(wordSoundPath);
-
-        wordAudio.onerror = () => clickSound.play();
-        wordAudio.play().catch(() => clickSound.play());
-
-        const popup = document.createElement('div');
-        popup.className = 'popup';
-        popup.textContent = `${item.label} for ${item.word}`;
-        btn.appendChild(popup);
-        setTimeout(() => popup.remove(), 1500);
+    function createItemButtons(items, container, folder) {
+      container.innerHTML = '';
+      items.forEach(item => {
+        const btn = document.createElement('button');
+        btn.className = 'item-btn';
+        btn.textContent = item.label;
+        btn.onclick = () => {
+          const sound = new Audio(`sounds/${item.label.toLowerCase()}-${item.word.toLowerCase()}.mp3`);
+          sound.play();
+          const img = document.getElementById('imagePreview');
+          img.src = `images/${item.label.toLowerCase()}.png`;
+          img.style.display = 'block';
+          setTimeout(() => img.style.display = 'none', 2000);
+        };
+        container.appendChild(btn);
       });
+    }
 
-      buttonGrid.appendChild(btn);
-    });
+    function showCategory(category) {
+      document.getElementById('mainMenu').classList.remove('visible');
+      if (category === 'abc') {
+        document.getElementById('abcMenu').classList.add('visible');
+        createItemButtons(abc, abcGrid, 'abc');
+      } else if (category === '123') {
+        document.getElementById('numberMenu').classList.add('visible');
+        createItemButtons(digits, numGrid, '123');
+      }
+    }
+
+    function backToMain() {
+      document.getElementById('mainMenu').classList.add('visible');
+      document.getElementById('abcMenu').classList.remove('visible');
+      document.getElementById('numberMenu').classList.remove('visible');
+    }
+
+    function playMusic() {
+      const music = new Audio('sounds/hello.mp3');
+      music.play();
+    }
+
+    // Say Hello on App Start
+    window.onload = () => {
+      const welcome = new Audio('sounds/hello.mp3');
+      welcome.play();
+    };
   </script>
 </body>
 </html>
