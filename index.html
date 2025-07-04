@@ -63,11 +63,21 @@
       border-radius: 12px;
       cursor: pointer;
     }
-    #imagePreview {
-      margin-top: 20px;
-      max-width: 150px;
-      height: auto;
+    #imagePopup {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      border: 3px solid #00bcd4;
+      border-radius: 12px;
+      padding: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
       display: none;
+      z-index: 10;
+    }
+    #imagePopup img {
+      max-width: 200px;
     }
   </style>
 </head>
@@ -80,6 +90,7 @@
   <div class="main-menu visible" id="mainMenu">
     <button class="btn" onclick="showCategory('abc')">📚 Learn ABC</button>
     <button class="btn" onclick="showCategory('123')">🔢 Learn 123</button>
+    <button class="btn" onclick="showCategory('music')">🎵 Music</button>
   </div>
 
   <!-- ABC Category -->
@@ -94,8 +105,14 @@
     <div class="items-grid" id="numGrid"></div>
   </div>
 
-  <!-- Image Display -->
-  <img id="imagePreview" />
+  <!-- Music Category -->
+  <div class="category-container" id="musicMenu">
+    <button class="btn" onclick="backToMain()">⬅ Back</button>
+    <div class="items-grid" id="musicGrid"></div>
+  </div>
+
+  <!-- Image Popup -->
+  <div id="imagePopup"><img id="imagePreview" src="" alt="Popup"></div>
 
   <script>
     const abc = [
@@ -104,10 +121,10 @@
       { label: 'G', word: 'Goat' }, { label: 'H', word: 'Hat' }, { label: 'I', word: 'Ice' },
       { label: 'J', word: 'Jug' }, { label: 'K', word: 'Kite' }, { label: 'L', word: 'Lion' },
       { label: 'M', word: 'Monkey' }, { label: 'N', word: 'Nest' }, { label: 'O', word: 'Orange' },
-      { label: 'P', word: 'Pen' }, { label: 'Q', word: 'Queen' }, { label: 'R', word: 'Rabbit' },
+      { label: 'P', word: 'Parrot' }, { label: 'Q', word: 'Queen' }, { label: 'R', word: 'Rabbit' },
       { label: 'S', word: 'Sun' }, { label: 'T', word: 'Tiger' }, { label: 'U', word: 'Umbrella' },
-      { label: 'V', word: 'Van' }, { label: 'W', word: 'Watch' }, { label: 'X', word: 'X-ray' },
-      { label: 'Y', word: 'Yoyo' }, { label: 'Z', word: 'Zoo' }
+      { label: 'V', word: 'Van' }, { label: 'W', word: 'Watch' }, { label: 'X', word: 'Xylophone' },
+      { label: 'Y', word: 'Yak' }, { label: 'Z', word: 'Zoo' }
     ];
 
     const digits = [
@@ -117,22 +134,37 @@
       { label: '10', word: 'Ten' }
     ];
 
+    const musicList = [
+      { label: 'Twinkle Twinkle', file: 'twinkle.mp3' },
+      { label: 'ABC Song', file: 'abc-song.mp3' },
+      { label: 'Number Song', file: 'numbers.mp3' },
+      { label: 'Baa Baa Black Sheep', file: 'baa-baa.mp3' },
+      { label: 'Wheels on the Bus', file: 'wheels.mp3' }
+    ];
+
     const abcGrid = document.getElementById('abcGrid');
     const numGrid = document.getElementById('numGrid');
+    const musicGrid = document.getElementById('musicGrid');
+    const imagePopup = document.getElementById('imagePopup');
     const imagePreview = document.getElementById('imagePreview');
 
-    function createItemButtons(items, container) {
+    function createItemButtons(items, container, isMusic = false) {
       container.innerHTML = '';
       items.forEach(item => {
         const btn = document.createElement('button');
         btn.className = 'item-btn';
         btn.textContent = item.label;
         btn.onclick = () => {
-          const sound = new Audio(`sounds/${item.label.toLowerCase()}-${item.word.toLowerCase()}.mp3`);
-          sound.play();
-          imagePreview.src = `images/${item.label.toLowerCase()}.png`;
-          imagePreview.style.display = 'block';
-          setTimeout(() => imagePreview.style.display = 'none', 2000);
+          if (isMusic) {
+            const music = new Audio(`sounds/${item.file}`);
+            music.play();
+          } else {
+            const sound = new Audio(`sounds/${item.label.toLowerCase()}-${item.word.toLowerCase()}.mp3`);
+            sound.play();
+            imagePreview.src = `images/${item.label.toLowerCase()}.png`;
+            imagePopup.style.display = 'block';
+            setTimeout(() => imagePopup.style.display = 'none', 2000);
+          }
         };
         container.appendChild(btn);
       });
@@ -147,6 +179,9 @@
       } else if (category === '123') {
         document.getElementById('numberMenu').classList.add('visible');
         createItemButtons(digits, numGrid);
+      } else if (category === 'music') {
+        document.getElementById('musicMenu').classList.add('visible');
+        createItemButtons(musicList, musicGrid, true);
       }
     }
 
@@ -155,6 +190,7 @@
       document.getElementById('greetingMessage').style.display = 'block';
       document.getElementById('abcMenu').classList.remove('visible');
       document.getElementById('numberMenu').classList.remove('visible');
+      document.getElementById('musicMenu').classList.remove('visible');
     }
 
     // Greet on App Start
