@@ -69,15 +69,16 @@
       left: 50%;
       transform: translate(-50%, -50%);
       background: white;
-      border: 3px solid #00bcd4;
+      border: 4px solid #00bcd4;
       border-radius: 12px;
       padding: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+      box-shadow: 0 0 15px rgba(0,0,0,0.4);
       display: none;
       z-index: 10;
     }
     #imagePopup img {
-      max-width: 200px;
+      max-width: 300px;
+      height: auto;
     }
   </style>
 </head>
@@ -86,35 +87,32 @@
 
   <div class="greeting" id="greetingMessage">Hello! Choose a category to begin:</div>
 
-  <!-- Main Menu -->
   <div class="main-menu visible" id="mainMenu">
     <button class="btn" onclick="showCategory('abc')">📚 Learn ABC</button>
     <button class="btn" onclick="showCategory('123')">🔢 Learn 123</button>
     <button class="btn" onclick="showCategory('music')">🎵 Music</button>
   </div>
 
-  <!-- ABC Category -->
   <div class="category-container" id="abcMenu">
     <button class="btn" onclick="backToMain()">⬅ Back</button>
     <div class="items-grid" id="abcGrid"></div>
   </div>
 
-  <!-- Number Category -->
   <div class="category-container" id="numberMenu">
     <button class="btn" onclick="backToMain()">⬅ Back</button>
     <div class="items-grid" id="numGrid"></div>
   </div>
 
-  <!-- Music Category -->
   <div class="category-container" id="musicMenu">
     <button class="btn" onclick="backToMain()">⬅ Back</button>
     <div class="items-grid" id="musicGrid"></div>
   </div>
 
-  <!-- Image Popup -->
   <div id="imagePopup"><img id="imagePreview" src="" alt="Popup"></div>
 
   <script>
+    let currentSound = null;
+
     const abc = [
       { label: 'A', word: 'Apple' }, { label: 'B', word: 'Ball' }, { label: 'C', word: 'Cat' },
       { label: 'D', word: 'Dog' }, { label: 'E', word: 'Elephant' }, { label: 'F', word: 'Fish' },
@@ -148,6 +146,13 @@
     const imagePopup = document.getElementById('imagePopup');
     const imagePreview = document.getElementById('imagePreview');
 
+    function stopCurrentSound() {
+      if (currentSound) {
+        currentSound.pause();
+        currentSound.currentTime = 0;
+      }
+    }
+
     function createItemButtons(items, container, isMusic = false) {
       container.innerHTML = '';
       items.forEach(item => {
@@ -155,12 +160,13 @@
         btn.className = 'item-btn';
         btn.textContent = item.label;
         btn.onclick = () => {
+          stopCurrentSound();
           if (isMusic) {
-            const music = new Audio(`sounds/${item.file}`);
-            music.play();
+            currentSound = new Audio(`sounds/${item.file}`);
+            currentSound.play();
           } else {
-            const sound = new Audio(`sounds/${item.label.toLowerCase()}-${item.word.toLowerCase()}.mp3`);
-            sound.play();
+            currentSound = new Audio(`sounds/${item.label.toLowerCase()}-${item.word.toLowerCase()}.mp3`);
+            currentSound.play();
             imagePreview.src = `images/${item.label.toLowerCase()}.png`;
             imagePopup.style.display = 'block';
             setTimeout(() => imagePopup.style.display = 'none', 2000);
@@ -173,6 +179,7 @@
     function showCategory(category) {
       document.getElementById('mainMenu').classList.remove('visible');
       document.getElementById('greetingMessage').style.display = 'none';
+      stopCurrentSound();
       if (category === 'abc') {
         document.getElementById('abcMenu').classList.add('visible');
         createItemButtons(abc, abcGrid);
@@ -191,12 +198,12 @@
       document.getElementById('abcMenu').classList.remove('visible');
       document.getElementById('numberMenu').classList.remove('visible');
       document.getElementById('musicMenu').classList.remove('visible');
+      stopCurrentSound();
     }
 
-    // Greet on App Start
     window.onload = () => {
-      const welcome = new Audio('sounds/hello.mp3');
-      welcome.play();
+      currentSound = new Audio('sounds/hello.mp3');
+      currentSound.play();
     };
   </script>
 </body>
