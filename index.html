@@ -74,6 +74,8 @@
       cursor: pointer;
       box-shadow: 0 0 10px rgba(0,188,212,0.5);
       transition: transform 0.2s;
+      position: relative;
+      overflow: hidden;
     }
     .item-btn:hover {
       transform: scale(1.1);
@@ -101,6 +103,25 @@
     #imagePopup img {
       max-width: 320px;
       height: auto;
+    }
+    .bubble {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background: rgba(0, 188, 212, 0.5);
+      border-radius: 50%;
+      pointer-events: none;
+      animation: bubblePop 0.6s ease-out forwards;
+    }
+    @keyframes bubblePop {
+      0% {
+        transform: scale(1);
+        opacity: 1;
+      }
+      100% {
+        transform: scale(2.5);
+        opacity: 0;
+      }
     }
   </style>
 </head>
@@ -136,17 +157,15 @@
     let currentSound = null;
     let imageTimer = null;
 
-    const abc = [
-      { label: 'A', word: 'Apple' }, { label: 'B', word: 'Ball' }, { label: 'C', word: 'Cat' },
-      { label: 'D', word: 'Dog' }, { label: 'E', word: 'Elephant' }, { label: 'F', word: 'Fish' },
-      { label: 'G', word: 'Goat' }, { label: 'H', word: 'Hat' }, { label: 'I', word: 'Ice' },
-      { label: 'J', word: 'Jug' }, { label: 'K', word: 'Kite' }, { label: 'L', word: 'Lion' },
-      { label: 'M', word: 'Monkey' }, { label: 'N', word: 'Nest' }, { label: 'O', word: 'Orange' },
-      { label: 'P', word: 'Parrot' }, { label: 'Q', word: 'Queen' }, { label: 'R', word: 'Rabbit' },
-      { label: 'S', word: 'Sun' }, { label: 'T', word: 'Tiger' }, { label: 'U', word: 'Umbrella' },
-      { label: 'V', word: 'Van' }, { label: 'W', word: 'Watch' }, { label: 'X', word: 'Xylophone' },
-      { label: 'Y', word: 'Yak' }, { label: 'Z', word: 'Zoo' }
-    ];
+    const abc = [...'ABCDEFGHIJKLMNOPQRSTUVWXYZ'].map(letter => {
+      const words = {
+        A: 'Apple', B: 'Ball', C: 'Cat', D: 'Dog', E: 'Elephant', F: 'Fish', G: 'Goat', H: 'Hat',
+        I: 'Ice', J: 'Jug', K: 'Kite', L: 'Lion', M: 'Monkey', N: 'Nest', O: 'Orange',
+        P: 'Parrot', Q: 'Queen', R: 'Rabbit', S: 'Sun', T: 'Tiger', U: 'Umbrella',
+        V: 'Van', W: 'Watch', X: 'Xylophone', Y: 'Yak', Z: 'Zoo'
+      };
+      return { label: letter, word: words[letter] };
+    });
 
     const digits = [
       { label: '1', word: 'One' }, { label: '2', word: 'Two' }, { label: '3', word: 'Three' },
@@ -189,6 +208,16 @@
       }, 2500);
     }
 
+    function createBubbleEffect(button) {
+      const bubble = document.createElement('span');
+      bubble.classList.add('bubble');
+      const rect = button.getBoundingClientRect();
+      bubble.style.left = `${Math.random() * button.offsetWidth}px`;
+      bubble.style.top = `${Math.random() * button.offsetHeight}px`;
+      button.appendChild(bubble);
+      setTimeout(() => bubble.remove(), 600);
+    }
+
     function createItemButtons(items, container, isMusic = false) {
       container.innerHTML = '';
       items.forEach(item => {
@@ -198,6 +227,7 @@
         btn.onclick = () => {
           stopCurrentSound();
           hideImagePopup();
+          createBubbleEffect(btn);
           if (isMusic) {
             currentSound = new Audio(`sounds/${item.file}`);
             currentSound.play();
