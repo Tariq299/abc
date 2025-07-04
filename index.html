@@ -18,12 +18,17 @@
       font-size: 28px;
       font-weight: bold;
     }
-    .main-menu, .category-menu, .items-grid {
+    .greeting {
+      margin-top: 30px;
+      font-size: 22px;
+      font-weight: 500;
+    }
+    .main-menu, .category-container, .items-grid {
       display: none;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      margin-top: 40px;
+      margin-top: 30px;
     }
     .visible {
       display: flex;
@@ -44,8 +49,8 @@
     }
     .items-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-      gap: 15px;
+      grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+      gap: 12px;
       padding: 20px;
       max-width: 600px;
     }
@@ -69,22 +74,27 @@
 <body>
   <header>Learn With Fun</header>
 
+  <div class="greeting" id="greetingMessage">Hello! Choose a category to begin:</div>
+
+  <!-- Main Menu -->
   <div class="main-menu visible" id="mainMenu">
-    <button class="btn" onclick="showCategory('abc')">ABC</button>
-    <button class="btn" onclick="showCategory('123')">123</button>
-    <button class="btn" onclick="playMusic()">Music</button>
+    <button class="btn" onclick="showCategory('abc')">📚 Learn ABC</button>
+    <button class="btn" onclick="showCategory('123')">🔢 Learn 123</button>
   </div>
 
-  <div class="category-menu" id="abcMenu">
-    <button class="btn" onclick="backToMain()">Back</button>
+  <!-- ABC Category -->
+  <div class="category-container" id="abcMenu">
+    <button class="btn" onclick="backToMain()">⬅ Back</button>
     <div class="items-grid" id="abcGrid"></div>
   </div>
 
-  <div class="category-menu" id="numberMenu">
-    <button class="btn" onclick="backToMain()">Back</button>
+  <!-- Number Category -->
+  <div class="category-container" id="numberMenu">
+    <button class="btn" onclick="backToMain()">⬅ Back</button>
     <div class="items-grid" id="numGrid"></div>
   </div>
 
+  <!-- Image Display -->
   <img id="imagePreview" />
 
   <script>
@@ -109,8 +119,9 @@
 
     const abcGrid = document.getElementById('abcGrid');
     const numGrid = document.getElementById('numGrid');
+    const imagePreview = document.getElementById('imagePreview');
 
-    function createItemButtons(items, container, folder) {
+    function createItemButtons(items, container) {
       container.innerHTML = '';
       items.forEach(item => {
         const btn = document.createElement('button');
@@ -119,10 +130,9 @@
         btn.onclick = () => {
           const sound = new Audio(`sounds/${item.label.toLowerCase()}-${item.word.toLowerCase()}.mp3`);
           sound.play();
-          const img = document.getElementById('imagePreview');
-          img.src = `images/${item.label.toLowerCase()}.png`;
-          img.style.display = 'block';
-          setTimeout(() => img.style.display = 'none', 2000);
+          imagePreview.src = `images/${item.label.toLowerCase()}.png`;
+          imagePreview.style.display = 'block';
+          setTimeout(() => imagePreview.style.display = 'none', 2000);
         };
         container.appendChild(btn);
       });
@@ -130,27 +140,24 @@
 
     function showCategory(category) {
       document.getElementById('mainMenu').classList.remove('visible');
+      document.getElementById('greetingMessage').style.display = 'none';
       if (category === 'abc') {
         document.getElementById('abcMenu').classList.add('visible');
-        createItemButtons(abc, abcGrid, 'abc');
+        createItemButtons(abc, abcGrid);
       } else if (category === '123') {
         document.getElementById('numberMenu').classList.add('visible');
-        createItemButtons(digits, numGrid, '123');
+        createItemButtons(digits, numGrid);
       }
     }
 
     function backToMain() {
       document.getElementById('mainMenu').classList.add('visible');
+      document.getElementById('greetingMessage').style.display = 'block';
       document.getElementById('abcMenu').classList.remove('visible');
       document.getElementById('numberMenu').classList.remove('visible');
     }
 
-    function playMusic() {
-      const music = new Audio('sounds/hello.mp3');
-      music.play();
-    }
-
-    // Say Hello on App Start
+    // Greet on App Start
     window.onload = () => {
       const welcome = new Audio('sounds/hello.mp3');
       welcome.play();
